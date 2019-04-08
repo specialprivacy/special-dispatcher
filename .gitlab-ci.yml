@@ -1,0 +1,41 @@
+image: docker:git
+services:
+  - docker:dind
+
+stages:
+  - build
+  - publish
+
+variables:
+  REGISTRY_ENDPOINT: registry-special.tenforce.com
+  REGISTRY_IMAGE: registry-special.tenforce.com/special/special-dispatcher
+  DOCKER_HOST: "tcp://docker:2375"
+
+before_script:
+  - docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_ENDPOINT}
+
+publish-github:
+  stage: publish
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - eval $(ssh-agent -s)
+    - echo "${SSH_PRIVATE_KEY}" | ssh-add /dev/stdin
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - git push ${GITHUB_REMOTE} master
+  only:
+    - master
+# Two seperate jobs so both remotes can be offline / fail without impacting the other sync job
+publish-vienna:
+  stage: publish
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - eval $(ssh-agent -s)
+    - echo "${SSH_PRIVATE_KEY}" | ssh-add /dev/stdin
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - git push ${VIENNA_REMOTE} master
+  only:
+    - master
