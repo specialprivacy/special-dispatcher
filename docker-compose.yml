@@ -15,12 +15,13 @@ x-default-logging:
 
 services:
   dispatcher:
-    image: registry-special.tenforce.com/special/demonstrator-dispatcher:3.0.0
+    image: registry-special.tenforce.com/special/demonstrator-dispatcher:3.0.1
     command: ["/caddy", "-conf", "/config/Caddyfile", "-agree=true"]
     environment:
       DOMAIN: $DOMAIN
       KEYCLOAK_ENDPOINT: $KEYCLOAK_ENDPOINT
       KONG_ENDPOINT: $KONG_ENDPOINT
+      XDC_ENDPOINT: $XDC_ENDPOINT
       EMAIL: $RECOVERY_EMAIL
     volumes:
     - caddycert:/root/.caddy/acme
