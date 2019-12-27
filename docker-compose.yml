@@ -15,7 +15,7 @@ x-default-logging:
 
 services:
   dispatcher:
-    image: registry-special.tenforce.com/special/demonstrator-dispatcher:3.0.2
+    image: registry-special.tenforce.com/special/demonstrator-dispatcher:3.0.3
     command: ["/caddy", "-conf", "/config/Caddyfile", "-agree=true"]
     environment:
       DOMAIN: $DOMAIN
